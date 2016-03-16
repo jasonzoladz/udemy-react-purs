@@ -25,15 +25,15 @@ import Model
 import Channels
 import Validators
 
-indexWillMount :: forall eff. ComponentWillMount Model Unit eff
+indexWillMount :: forall eff p. ComponentWillMount (Model p) Unit eff
 indexWillMount = \_ -> Rx.send [ FetchPosts ] effectsChannel
 
-indexRender :: forall eff. Render Model Unit eff
+indexRender :: forall eff p. Render (Model p) Unit eff
 indexRender = \ctx -> do
   model <- getProps ctx
   return $
     D.div
-      []
+      [ ]
       [ D.div
           [ P.className "text-xs-right" ]
           [
@@ -43,7 +43,7 @@ indexRender = \ctx -> do
       ]
 
 
-indexSpec :: forall eff. ReactSpec Model Unit eff
+indexSpec :: forall eff p. ReactSpec (Model p) Unit eff
 indexSpec =
     { render: indexRender
     , displayName: "index"
@@ -57,17 +57,17 @@ indexSpec =
     , componentWillUnmount: \_ -> return unit
     }
 
-index :: ReactClass Model
+index :: forall p. ReactClass (Model p)
 index = createClass indexSpec
 
-onePost :: Int -> ReactClass Model
+onePost :: forall p. Int -> ReactClass (Model p)
 onePost n = createClass $ spec n $ \ctx -> do
   state <- getProps ctx
   return $
     D.div [] [ D.text "This is the NewPost Page"
              ]
 
-newPost :: ReactClass Model
+newPost :: forall p. ReactClass (Model p)
 newPost = createClass $ spec initialPostFormState $ \ctx -> do
  model <- getProps ctx
  state <- readState ctx

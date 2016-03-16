@@ -34,19 +34,30 @@ import Model
 import Channels
 import Components.Pages
 import Effects.AjaxEffects
+import AddOns.Animation.Transition
+import AddOns.Animation.Props
 
-routingContainer :: ReactClass Model
+routingContainer :: forall p. ReactClass (Model p)
 routingContainer = createClass $ spec unit $ \ctx -> do
   state <- getProps ctx
-  case state.currPage of
-    Index    -> displayPage index state
-    Post n   -> displayPage (onePost n) state
-    NewPost  -> displayPage newPost state
-  where
-    displayPage page state =
-      return $ D.div [] [(createElement page state [])]
+  return $
+    reactCSSTransitionGroup
+        [ transitionName "example"
+        , transitionEnterTimeout 500
+        , transitionLeaveTimeout 500
+        ]
 
-update :: Model -> Action -> Model
+
+          (case state.currPage of
+            Index    -> map (displayPage index) [state]
+            Post n   -> map (displayPage (onePost n)) [state]
+            NewPost  -> map (displayPage newPost)     [state] )
+
+  where
+    displayPage page state = createElement page (state {key = (show state.currPage)}) []
+
+
+update :: forall p. (Model p) -> Action -> (Model p)
 update model action =
   case action of
     NoOp        -> model
@@ -83,7 +94,7 @@ main = do
 
 
   where
-    ui :: Model -> ReactElement
+    ui :: forall p. (Model p) -> ReactElement
     ui model = D.div' [ createFactory routingContainer model ]
 
     myRender model = void (elm' >>= render (ui model))

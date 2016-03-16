@@ -12,11 +12,13 @@ import Data.Traversable (traverse)
 
 import BlogRoutes
 
-type Model =
+type Model r =
   { currentPost   :: Maybe BlogPost
   , allPosts      :: BlogPostArray
   , currPage      :: Routes
   , nextId        :: Int
+  , key           :: String
+  | r
   }
 
 initialModel =
@@ -24,6 +26,7 @@ initialModel =
   , allPosts: []
   , currPage: Index
   , nextId: 0
+  , key: "foo"
   }
 
 newtype BlogPost = BlogPost
