@@ -27,6 +27,8 @@ rootUrl = "http://reduxblog.herokuapp.com/api/posts"
 apiKey :: String
 apiKey = "?key=8237rahs"
 
+-- http://reduxblog.herokuapp.com/api/posts?key=8237rahs
+
 fetchPosts :: forall e. Eff (MainEffects e) Unit
 fetchPosts = do
   let rUrl = rootUrl ++ apiKey
@@ -34,7 +36,7 @@ fetchPosts = do
            (\resp -> do
                 let ePosts = decodeBlogPostArray (resp.response)
                 case ePosts of
-                  Left _      -> log "An error occurred"
+                  Left _      -> log "An error occurred.  Remember, it's the API here.  It's not isomorphic, so you'd need to define separate decoders."
                   Right posts -> Rx.send [ SetPosts posts ] actionsChannel)
            (affjax $ defaultRequest { url = rUrl }) -- :: forall e. Aff (ajax :: AJAX | e) (AffjaxResponse Json))
 
